@@ -36,7 +36,7 @@ func countdown(number) {
 }
 
 func repeat_task(times) {
-    for (i = 1; i <= times; i = i + 1;) {
+    for (i = 1; i <= times; i = i + 1) {
         log("Task repetition #");
     }
 }

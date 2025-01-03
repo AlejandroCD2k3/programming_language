@@ -47,13 +47,13 @@ class Parser:
 
     def _parse_recipe_body(self):
         self._parse_input_clause()
-        self._consume("SYMBOL", ";")  # Ensure there's a semicolon after the input clause
+        self._consume("SYMBOL", ";")  
         self._parse_output_clause()
-        self._consume("SYMBOL", ";")  # Ensure there's a semicolon after the output clause
+        self._consume("SYMBOL", ";")
         self._parse_tool_clause()
-        self._consume("SYMBOL", ";")  # Ensure there's a semicolon after the tool clause
+        self._consume("SYMBOL", ";") 
         self._parse_quantity_clause()
-        self._consume("SYMBOL", ";")  # Ensure there's a semicolon after the quantity clause
+        self._consume("SYMBOL", ";")
 
     def _parse_input_clause(self):
         self._consume("KEYWORD", "input")
@@ -111,7 +111,8 @@ class Parser:
         self._consume("IDENTIFIER")
         self._consume("OPERATOR", "=")
         self._parse_expression()
-        self._consume("SYMBOL", ";")
+        if(self._peek_lexeme() != ")"):
+            self._consume("SYMBOL", ";")
 
     def _parse_conditional(self):
         self._consume("KEYWORD", "if")
