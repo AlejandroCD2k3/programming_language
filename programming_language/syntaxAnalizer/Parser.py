@@ -15,24 +15,27 @@ class Parser:
             else:
                 self._parse_recipe_list()
 
+    # --------------------- FUNCTION PRODUCTION RULES ---------------------
+
     def _parse_function_definition(self):
         self._consume("KEYWORD", "func")
-        self._consume("IDENTIFIER")  # Function name
+        self._consume("IDENTIFIER")  
         self._consume("SYMBOL", "(")
-        self._parse_parameter_list()  # If your functions have parameters
+        self._parse_parameter_list()  
         self._consume("SYMBOL", ")")
         self._consume("SYMBOL", "{")
-        self._parse_statement_list()  # Statements inside the function body
+        self._parse_statement_list()
         self._consume("SYMBOL", "}")
 
     def _parse_parameter_list(self):
         if self._peek_lexeme() != ")":
-            self._consume("IDENTIFIER")  # Parameter name
+            self._consume("IDENTIFIER") 
             while self._peek_lexeme() == ",":
                 self._consume("SYMBOL", ",")
-                self._consume("IDENTIFIER")  # Next parameter
+                self._consume("IDENTIFIER") 
 
-    # Recipe production rules
+    # --------------------- RECIPE PRODUCTION RULES ---------------------
+
     def _parse_recipe_list(self):
         self._parse_recipe()
         while self._peek_type() == "KEYWORD" and self._peek_lexeme() == "recipe":
@@ -87,7 +90,8 @@ class Parser:
         self._consume("NUMBER")
         self._consume("IDENTIFIER")
 
-    # Control structures production rules
+    # --------------------- CONTROL STRUCTURES PRODUCTION RULES ---------------------
+
     def _parse_statement_list(self):
         self._parse_statement()
         while self._peek_type() == "IDENTIFIER" or self._peek_type() == "KEYWORD":
@@ -176,7 +180,8 @@ class Parser:
         else:
             raise SyntaxError("Invalid term in expression", self._current_position())
 
-    # Utility functions
+    # --------------------- UTILITY FUNCTIONS ---------------------
+
     def _consume(self, expected_type, expected_lexeme=None):
         if self.position >= len(self.tokens):
             raise SyntaxError("Unexpected end of input", self._current_position())
