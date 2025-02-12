@@ -17,7 +17,7 @@ class Parser:
             else:
                 self._parse_statement()
 
-    # --------------------- FUNCIONES ---------------------
+    # --------------------- FUNCTIONS ---------------------
     def _parse_function_definition(self):
         self._consume("KEYWORD", "func")
         self._consume("IDENTIFIER")
@@ -35,7 +35,7 @@ class Parser:
                 self._consume("SYMBOL", ",")
                 self._consume("IDENTIFIER")
 
-    # --------------------- RECETAS ---------------------
+    # --------------------- RECIPES ---------------------
     def _parse_recipe_list(self):
         while self.position < len(self.tokens) and self._peek_lexeme() == "recipe":
             self._parse_recipe()
@@ -117,7 +117,7 @@ class Parser:
         return items
 
 
-    # --------------------- SENTENCIAS Y ESTRUCTURAS DE CONTROL ---------------------
+    # --------------------- STATEMENTS AND CONTROL STRUCTURES ---------------------
     def _parse_statement_list(self):
         while self.position < len(self.tokens) and self._peek_lexeme() != "}":
             self._parse_statement()
@@ -128,7 +128,7 @@ class Parser:
             if self._lookahead_is_operator("="):
                 self._parse_assignment()
             else:
-                raise SyntaxError("Sentencia inesperada: se encontró un identificador sin asignación", self._current_position())
+                raise SyntaxError("Unexpected statement: an unassigned identifier was found.", self._current_position())
         elif token_type == "KEYWORD":
             if lexeme == "if":
                 self._parse_conditional()
@@ -139,16 +139,11 @@ class Parser:
             elif lexeme == "craft":
                 self._parse_craft_command()
             else:
-                raise SyntaxError(f"Sentencia no válida que inicia con '{lexeme}'", self._current_position())
+                raise SyntaxError(f"Invalid statement starting with '{lexeme}'", self._current_position())
         else:
-            raise SyntaxError("Sentencia no válida", self._current_position())
+            raise SyntaxError("Invalid statement", self._current_position())
 
     def _parse_assignment(self, require_semicolon=True):
-        """
-        Producción para asignación:
-            assignment -> IDENTIFIER '=' expression ';'
-        El parámetro require_semicolon permite omitir el consumo del ';' en contextos como el encabezado de un for.
-        """
         self._consume("IDENTIFIER")
         self._consume("OPERATOR", "=")
         self._parse_expression()
@@ -223,16 +218,16 @@ class Parser:
             self._parse_expression()
             self._consume("SYMBOL", ")")
         else:
-            raise SyntaxError("Término no válido en la expresión", self._current_position())
+            raise SyntaxError("Invalid term in the expression ", self._current_position())
 
-    # --------------------- FUNCIONES AUXILIARES ---------------------
+    # --------------------- AUX FUNCTIONS ---------------------
     def _consume(self, expected_type, expected_lexeme=None):
         if self.position >= len(self.tokens):
-            raise SyntaxError("Fin inesperado de la entrada", self._current_position())
+            raise SyntaxError("Unexpected end of input ", self._current_position())
         token_type, lexeme, position = self.tokens[self.position]
         if token_type != expected_type or (expected_lexeme is not None and lexeme != expected_lexeme):
             expected_info = f"{expected_type} '{expected_lexeme}'" if expected_lexeme else expected_type
-            raise SyntaxError(f"Se esperaba {expected_info}, pero se encontró {token_type} '{lexeme}'", position)
+            raise SyntaxError(f"Expected {expected_info}, found {token_type} '{lexeme}'", position)
         self.position += 1
 
     def _peek(self):
@@ -252,10 +247,6 @@ class Parser:
         return self.tokens[-1][2] if self.tokens else 0
 
     def _lookahead_is_operator(self, op):
-        """
-        Verifica si el token siguiente (lookahead) es un operador específico.
-        Esto es útil para distinguir sentencias de asignación cuando el primer token es un identificador.
-        """
         if self.position + 1 < len(self.tokens):
             next_token = self.tokens[self.position + 1]
             return next_token[0] == "OPERATOR" and next_token[1] == op

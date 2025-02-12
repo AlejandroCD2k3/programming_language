@@ -1,8 +1,8 @@
 import re
 
 TOKEN_PATTERNS = [
-    ("COMMENT", re.compile(r"//.*")),         # Primero se detectan los comentarios
-    ("WHITESPACE", re.compile(r"\s+")),         # Luego los espacios en blanco
+    ("COMMENT", re.compile(r"//.*")),
+    ("WHITESPACE", re.compile(r"\s+")),
     ("KEYWORD", re.compile(r"\b(recipe|input|output|tool_required|quantity|func|if|else|while|for|craft|log|int|float|char|return)\b")),
     ("NUMBER", re.compile(r"\b\d+(\.\d+)?\b")),
     ("STRING", re.compile(r'\"[^\"]*\"')),
