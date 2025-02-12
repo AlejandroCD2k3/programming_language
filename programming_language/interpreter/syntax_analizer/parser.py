@@ -61,8 +61,9 @@ class Parser:
         self._consume("KEYWORD", "input")
         self._consume("SYMBOL", ":")
         self._consume("SYMBOL", "[")
-        self._parse_item_list()
+        items = self._parse_item_list()
         self._consume("SYMBOL", "]")
+        return items
 
     def _parse_output_clause(self):
         self._consume("KEYWORD", "output")
@@ -80,16 +81,17 @@ class Parser:
         self._consume("NUMBER")
 
     def _parse_item_list(self):
-        self._parse_item()
+        items = [self._parse_item()]
         while self._peek_lexeme() == ",":
             self._consume("SYMBOL", ",")
-            self._parse_item()
+            items.append(self._parse_item())
+        return items
 
     def _parse_item(self):
         self._consume("SYMBOL", "(")
-        row = self._consume("NUMBER")    
+        row = self._consume("NUMBER")
         self._consume("SYMBOL", ",")
-        col = self._consume("NUMBER")      
+        col = self._consume("NUMBER")
         self._consume("SYMBOL", ")")
         
         quantity = self._consume("NUMBER")
@@ -100,22 +102,6 @@ class Parser:
             "quantity": quantity,
             "material": material
         }
-
-    def _parse_item_list(self):
-        items = [self._parse_item()]
-        while self._peek_lexeme() == ",":
-            self._consume("SYMBOL", ",")
-            items.append(self._parse_item())
-        return items
-
-    def _parse_input_clause(self):
-        self._consume("KEYWORD", "input")
-        self._consume("SYMBOL", ":")
-        self._consume("SYMBOL", "[")
-        items = self._parse_item_list()
-        self._consume("SYMBOL", "]")
-        return items
-
 
     # --------------------- STATEMENTS AND CONTROL STRUCTURES ---------------------
     def _parse_statement_list(self):
@@ -218,17 +204,18 @@ class Parser:
             self._parse_expression()
             self._consume("SYMBOL", ")")
         else:
-            raise SyntaxError("Invalid term in the expression ", self._current_position())
+            raise SyntaxError("Invalid term in the expression", self._current_position())
 
     # --------------------- AUX FUNCTIONS ---------------------
     def _consume(self, expected_type, expected_lexeme=None):
         if self.position >= len(self.tokens):
-            raise SyntaxError("Unexpected end of input ", self._current_position())
+            raise SyntaxError("Unexpected end of input", self._current_position())
         token_type, lexeme, position = self.tokens[self.position]
         if token_type != expected_type or (expected_lexeme is not None and lexeme != expected_lexeme):
             expected_info = f"{expected_type} '{expected_lexeme}'" if expected_lexeme else expected_type
             raise SyntaxError(f"Expected {expected_info}, found {token_type} '{lexeme}'", position)
         self.position += 1
+        return lexeme
 
     def _peek(self):
         if self.position >= len(self.tokens):
