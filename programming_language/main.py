@@ -1,7 +1,7 @@
-from interpreter.lexicalAnalizer.Lexeme import TOKEN_PATTERNS
-from interpreter.lexicalAnalizer.Lexer import Lexer, LexicalError
-from interpreter.syntaxAnalizer.Parser import Parser
-from interpreter.syntaxAnalizer.SyntaxError import SyntaxError
+from interpreter.lexical_analizer.lexeme import TOKEN_PATTERNS
+from interpreter.lexical_analizer.lexer import Lexer, LexicalError
+from interpreter.syntax_analizer.parser import Parser
+from interpreter.syntax_analizer.syntax_error import SyntaxError
 import numpy
 
 def main():
@@ -77,8 +77,8 @@ def main():
     try:
         parser.parse()
         print("El código es válido.")
-    except SyntaxError as e:
-        print(e)
+    except SyntaxError as syntax_error:
+        print(syntax_error)
     
     try:
         tokens = lexer.tokenize()
