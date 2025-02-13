@@ -4,7 +4,8 @@ from PyQt5.QtWidgets import QListWidget
 class TemplatePanel(QListWidget):
     def __init__(self, templates_dir, code_editor, parent=None):
         super(TemplatePanel, self).__init__(parent)
-        self.templates_dir = templates_dir
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.templates_dir = os.path.join(base_dir, "..", templates_dir)
         self.code_editor = code_editor
         self.load_templates()
         self.itemClicked.connect(self.load_template)

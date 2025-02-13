@@ -1,95 +1,51 @@
-from interpreter.lexical_analizer.lexeme import TOKEN_PATTERNS
-from interpreter.lexical_analizer.lexer import Lexer, LexicalError
-from interpreter.syntax_analizer.parser import Parser
-from interpreter.syntax_analizer.syntax_error import SyntaxError
-import numpy
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from gui.code_editor import CodeEditor
+from gui.debug_panel import DebugPanel
+from gui.crafting_table import CraftingTableWidget
+from gui.template_panel import TemplatePanel
+from controller.interpreter_controller import InterpreterController
 
-def main():
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.setWindowTitle("Minecraft Crafting Interpreter")
+        self.setGeometry(100, 100, 1200, 800)
+        self.init_ui()
 
-    code = """
-        func calculate_area(length, width) {
-            result = length * width;
-            if (result > 100) {
-                log("Large area calculated");
-            } else {
-                log("Small area calculated");
-            }
-        }
+    def init_ui(self):
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+        main_layout = QHBoxLayout(central_widget)
 
-        recipe cake {
-            input: [ (0,0) 1 milk_bucket, (0,1) 1 milk_bucket, (0,2) 1 milk_bucket,
-                    (1,0) 1 sugar,        (1,1) 1 egg,         (1,2) 1 sugar,
-                    (2,0) 1 wheat,        (2,1) 1 wheat,       (2,2) 1 wheat ];
-            output: cake;
-            tool_required: crafting_table;
-            quantity: 1;
-        }
+        left_panel = QWidget()
+        left_layout = QVBoxLayout(left_panel)
+        self.code_editor = CodeEditor()
+        self.debug_panel = DebugPanel()
+        left_layout.addWidget(self.code_editor)
+        left_layout.addWidget(self.debug_panel)
 
-        recipe bread {
-            input: [ (0,0) 1 wheat, (0,1) 1 wheat, (0,2) 1 wheat ];
-            output: bread;
-            tool_required: crafting_table;
-            quantity: 1;
-        }
+        self.run_button = QPushButton("Run Code")
+        self.run_button.clicked.connect(self.run_code)
+        left_layout.addWidget(self.run_button)
 
-        recipe wooden_pickaxe {
-            input: [ (0,0) 1 wood_plank, (0,1) 1 wood_plank, (0,2) 1 wood_plank,
-                                        (1,1) 1 stick,
-                                        (2,1) 1 stick ];
-            output: wooden_pickaxe;
-            tool_required: crafting_table;
-            quantity: 1;
-        }
+        right_panel = QWidget()
+        right_layout = QVBoxLayout(right_panel)
+        self.crafting_table = CraftingTableWidget()
+        self.template_panel = TemplatePanel("templates", self.code_editor)
+        right_layout.addWidget(self.crafting_table)
+        right_layout.addWidget(self.template_panel)
 
-        recipe furnace {
-            input: [ (0,0) 1 cobblestone, (0,1) 1 cobblestone, (0,2) 1 cobblestone,
-                    (1,0) 1 cobblestone,                           (1,2) 1 cobblestone,
-                    (2,0) 1 cobblestone, (2,1) 1 cobblestone, (2,2) 1 cobblestone ];
-            output: furnace;
-            tool_required: crafting_table;
-            quantity: 1;
-        }
+        main_layout.addWidget(left_panel, 2) 
+        main_layout.addWidget(right_panel, 1)
 
-        func greet_user(name) {
-            log("Hello, " + name);
-        }
+        self.interpreter_controller = InterpreterController(self.code_editor, self.crafting_table, self.debug_panel)
 
-        func countdown(number) {
-            while (number > 0) {
-                log("Countdown: " + number);
-                number = number - 1;
-            }
-            log("Countdown finished");
-        }
-
-        func repeat_task(times) {
-            for (i = 1; i <= times; i = i + 1) {
-                log("Task repetition #" + i);
-            }
-        }
-        """
-
-
- 
-    lexer = Lexer(code)
-    tokens = lexer.tokenize()
-    parser = Parser(tokens)
-    try:
-        parser.parse()
-        print("El código es válido.")
-    except SyntaxError as syntax_error:
-        print(syntax_error)
-    
-    try:
-        tokens = lexer.tokenize()
-        """
-        print("\nTokens found:")
-        print("-------------------")
-        for token in tokens:
-            print(f"Type: {token[0]}, Lexeme: '{token[1]}', Position: {token[2]}")
-        """
-    except LexicalError as lexical_error:
-        print(lexical_error)
+    def run_code(self):
+        self.interpreter_controller.interpret_code()
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec_())

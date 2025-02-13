@@ -1,9 +1,9 @@
 # interpreter/run_interpretation_process.py
 
-from lexical_analizer.lexer import Lexer, LexicalError
-from syntax_analizer.parser import Parser
-from syntax_analizer.syntax_error import SyntaxError
-from evaluator.interpreter import Interpreter
+from .lexical_analizer.lexer import Lexer, LexicalError
+from .syntax_analizer.parser import Parser
+from .syntax_analizer.syntax_error import SyntaxError
+from .evaluator.interpreter import Interpreter
 
 def run_interpretation_process(code):
 

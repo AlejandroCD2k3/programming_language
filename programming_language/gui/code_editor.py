@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QPlainTextEdit
-from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QFont, QRegExp
-from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QSyntaxHighlighter, QTextCharFormat, QFont
+from PyQt5.QtCore import Qt, QRegExp
+
 
 class CodeEditor(QPlainTextEdit):
     def __init__(self, parent=None):
