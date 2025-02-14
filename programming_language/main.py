@@ -1,6 +1,5 @@
 import sys
 import os
-import base64
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 )

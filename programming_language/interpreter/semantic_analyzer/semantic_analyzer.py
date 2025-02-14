@@ -13,6 +13,9 @@ class SemanticAnalyzer:
         if node is None:
             return None
         node_type = node.get("node_type")
+        # Si el nodo es una receta, usaremos el método visit_recipe
+        if node_type == "recipe":
+            return self.visit_recipe(node)
         method_name = "visit_" + node_type if node_type else "generic_visit"
         visitor = getattr(self, method_name, self.generic_visit)
         return visitor(node)
@@ -48,3 +51,20 @@ class SemanticAnalyzer:
         for stmt in node.get("body", []):
             self.visit(stmt)
         return node
+
+    def visit_recipe(self, node):
+        """
+        Valida que, si la herramienta requerida es 'crafting_table', las posiciones en el input estén entre 0 y 2.
+        """
+        if node.get("tool_required", "").lower() == "crafting_table":
+            input_items = node.get("input", [])
+            for item in input_items:
+                try:
+                    row = int(item["position"][0])
+                    col = int(item["position"][1])
+                except Exception as e:
+                    raise SemanticError(f"Invalid position format for item: {item}")
+                if row < 0 or row > 2 or col < 0 or col > 2:
+                    raise SemanticError(f"Invalid position {item['position']} for item '{item.get('material', 'unknown')}'. Indices must be between 0 and 2.")
+        # Continúa visitando los subnodos, si existen
+        return self.generic_visit(node)

@@ -251,7 +251,18 @@ class Parser:
     def _parse_term(self):
         token_type, lexeme, _ = self._peek()
         if token_type == "NUMBER":
-            value = self._consume("NUMBER")
+            value_str = self._consume("NUMBER")
+            # Convertir el valor a número (int o float) según corresponda
+            if "." in value_str:
+                try:
+                    value = float(value_str)
+                except ValueError:
+                    raise SyntaxError("Invalid float number: " + value_str, self._current_position())
+            else:
+                try:
+                    value = int(value_str)
+                except ValueError:
+                    raise SyntaxError("Invalid integer number: " + value_str, self._current_position())
             return {"node_type": "literal", "value": value}
         elif token_type == "STRING":
             value = self._consume("STRING")
