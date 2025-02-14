@@ -5,42 +5,46 @@ from interpreter.syntax_analyzer.syntax_error import SyntaxError
 from interpreter.evaluator.interpreter import Interpreter
 
 def run_interpretation_process(code):
-
     # ------------- LEXICAL ANALYZER -------------
-
     try:
         lexer = Lexer(code)
         tokens = lexer.tokenize()
     except LexicalError as le:
-        print(le)
-        return
+        print("Lexical Error:", le)
+        return None  # Retornamos None en caso de error
     
     # ------------- SYNTAX ANALYZER -------------
-
     try:
         parser = Parser(tokens)
-        abstract_syntax_tree = parser.parse()
+        abstract_syntax_tree = parser.parse()  # Se asume que parse() retorna un AST (por ejemplo, un diccionario)
         print("Syntactic analysis completed successfully.")
     except SyntaxError as se:
-        print(se)
-        return
+        print("Syntax Error:", se)
+        return None
     
     # ------------- SEMANTIC ANALYZER -------------
-
     try:
         semantic_analyzer = SemanticAnalyzer()
         semantic_analyzer.analyze(abstract_syntax_tree)
         print("Semantic analysis completed successfully.")
     except Exception as e:
-        print(e)
-        return
+        print("Semantic Analysis Error:", e)
+        return None
 
     # ------------- INTERPRETER EVALUATION -------------
-
+    # (Opcional) Si quieres ejecutar el código, puedes hacerlo:
     interpreter = Interpreter()
     interpreter.run(abstract_syntax_tree)
-    return abstract_syntax_tree
     
+    # Extraer la información relevante de la receta para actualizar la mesa de crafteo.
+    # Se asume que el AST tiene una estructura con una clave "recipe".
+    if isinstance(abstract_syntax_tree, dict) and "recipe" in abstract_syntax_tree:
+        recipe_ast = abstract_syntax_tree["recipe"]
+    else:
+        # Si el AST es directamente la receta o no tiene clave "recipe", retornamos el AST completo.
+        recipe_ast = abstract_syntax_tree
+
+    return recipe_ast
 
 if __name__ == "__main__":
     code = """
@@ -53,11 +57,9 @@ if __name__ == "__main__":
         }
     }
 
-    recipe cake {
-        input: [ (0,0) 1 milk_bucket, (0,1) 1 milk_bucket, (0,2) 1 milk_bucket,
-                (1,0) 1 sugar,        (1,1) 1 egg,         (1,2) 1 sugar,
-                (2,0) 1 wheat,        (2,1) 1 wheat,       (2,2) 1 wheat ];
-        output: cake;
+    recipe bread {
+        input: [ (0,0) 1 wheat, (0,1) 1 wheat, (0,2) 1 wheat ];
+        output: bread;
         tool_required: crafting_table;
         quantity: 1;
     }
@@ -84,5 +86,5 @@ if __name__ == "__main__":
         log("Testing semantic error: " + undefined_variable);
     }
     """
-
-    run_interpretation_process(code)
+    ast = run_interpretation_process(code)
+    print("AST returned:", ast)
