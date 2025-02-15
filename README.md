@@ -67,6 +67,7 @@ class Lexer:
             raise LexicalError(f"Invalid character '{current_char}'", position)
         else:
             raise LexicalError("Non-printable character detected", position)
+```
 
 ## Constructor (Lexical Analyzer)
 
